@@ -1,4 +1,5 @@
 import time
+import re
 
 def revgen():
     t = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -73,3 +74,10 @@ def genname(name,suffix):
     name = name + ";;;;"
     name = name+ " ".join(suffix)
     return f"N:{name}\n"
+
+def textedit(text):
+    if text:
+        text = re.sub(r'[^A-Za-z\s]', ' ', text)
+        return text.strip()
+    else:
+        return ""

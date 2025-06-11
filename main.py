@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from vcard import gen_vcard
+from utils import textedit
 
 def apply_custom_css():
     st.markdown("""
@@ -325,8 +326,8 @@ def main():
             st.markdown('<div class="section-header">📋 Mapping Summary</div>', unsafe_allow_html=True)
             with st.expander("View column assignments"):
                 for column, value in assign.items():
-                    st.write(f"**{column}:** {value}")
-    
+                    st.write(f"**{textedit(column)}:** {textedit(value)}")
+
     else:
         st.warning("⚠️ Please upload a file to continue.")
         st.markdown("""

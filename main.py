@@ -326,7 +326,8 @@ def main():
             st.markdown('<div class="section-header">📋 Mapping Summary</div>', unsafe_allow_html=True)
             with st.expander("View column assignments"):
                 for column, value in assign.items():
-                    st.write(f"**{textedit(column)}:** {textedit(value)}")
+                    if column != "NONE":
+                        st.write(f"**{textedit(column)}:** {textedit(value)}")
 
     else:
         st.warning("⚠️ Please upload a file to continue.")

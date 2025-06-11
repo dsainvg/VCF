@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import openpyxl
 from vcard import gen_vcard
 
 def apply_custom_css():
@@ -232,7 +233,9 @@ def main():
         st.markdown('<div class="section-header">👀 Data Preview</div>', unsafe_allow_html=True)
         with st.expander("View your data", expanded=False):
             st.dataframe(df, use_container_width=True)
-        
+        # Ask if the vCard is intended for iOS
+        is_ios = st.checkbox("Is this vCard for iOS devices?", help="Check if you want to optimize the vCard for iOS compatibility")
+        st.session_state["is_ios"] = is_ios
         # Column mapping section
         st.markdown('<div class="section-header">🔗 Column Mapping</div>', unsafe_allow_html=True)
         st.info("Map each column in your data to the appropriate vCard field")
@@ -271,7 +274,7 @@ def main():
         # Additional fields section
         st.markdown('<div class="section-header">➕ Additional Fields</div>', unsafe_allow_html=True)
         is_there = st.checkbox("Add common fields to all contacts", help="Add fields that will be the same for all contacts")
-        
+        ver = 2.1 if st.session_state.get("is_ios", False) else 3.0
         if is_there:
             no_of_such = int(st.number_input("Number of additional fields", key="new_value", min_value=1, max_value=10, step=1))
             
@@ -304,7 +307,7 @@ def main():
                 total_rows = len(df)
                 
                 for index, row in df.iterrows():
-                    vcardtext += gen_vcard(row=row, assign=assign)
+                    vcardtext += gen_vcard(row=row, assign=assign, version=ver)
                     progress_bar.progress((index + 1) / total_rows)
                 
                 st.success(f"✅ Generated vCard for {total_rows} contacts!")

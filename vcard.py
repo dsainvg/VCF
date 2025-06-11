@@ -1,7 +1,7 @@
 from utils import genphn,genrev,gennote,genorg,genemail,genjob,genaddress,genfullname,genname
 
-def gen_vcard(assign,row):
-    returntext = "BEGIN:VCARD\nVERSION:2.1\n"
+def gen_vcard(assign,row,version="2.1"):
+    returntext = f"BEGIN:VCARD\nVERSION:{version}\n"
     name = []
     suffix = []
     for key, value in assign.items():

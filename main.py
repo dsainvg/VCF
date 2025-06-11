@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from vcard import gen_vcard
 from utils import textedit
+from utils import columncheck
 
 def apply_custom_css():
     st.markdown("""
@@ -257,9 +258,11 @@ def main():
                     st.code(str(df[column].iloc[0]) if not df[column].empty else "No data")
                 
                 with col2:
-                    if column in columnoptions:
-                        value = column
+                    value = columncheck(column)
+                    if value:
                         st.success(f"Auto-mapped to: {value}")
+                        st.info(f"Auto-mapped to: {value}. You can change this if needed.")
+                        value = st.selectbox(f"Map '{column}' to:", options=columnoptions, index=columnoptions.index(value) if value in columnoptions else 0, key=column)
                     else:
                         value = st.selectbox(f"Map '{column}' to:", options=columnoptions, key=column)
                     

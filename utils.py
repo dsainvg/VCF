@@ -81,3 +81,36 @@ def textedit(text):
         return text.strip()
     else:
         return ""
+
+def columncheck(req):
+    columnoptions = ["NONE","Address", "Name", "Phone Number", "Email","Suffix","Organization", "Job Title","NOTE"]
+    if req in columnoptions:
+        return req
+    req = req.strip()
+    req = req.lower()
+    Nameoptions = ["name","full name","name","fullname"]
+    addressoptions = ["address","address work","address home","hall of residence","residence"]
+    phoneoptions = ["phone number","phone","mobile","ph no","mobile number","cell","home phone","work phone","business phone","business fax"]
+    emailoptions = ["email","email work","email home","email other","email personal","gmail","outlook","yahoo","hotmail","icloud","mail","work mail","personal mail","mailid","email id", "email address", "mail id"]
+    companyoptions = ["company","organization","org","company name","organization name","org name"]
+    noteoptions = ["note","department","notes","comment","comments","description","remarks","feedback","observation","annotation"]
+    jobtitleoptions = ["job title","job","designation","position","role","occupation","profession","work title","work position"]
+    suffixoptions = ["suffix","name suffix","title suffix","honorific suffix","post-nominal letters","post-nominal title","post-nominal suffix"]
+    if req in Nameoptions:
+        return "Name"
+    elif req in addressoptions:
+        return "Address"
+    elif req in phoneoptions:
+        return "Phone Number"
+    elif req in emailoptions:
+        return "Email"
+    elif req in jobtitleoptions:
+        return "Job Title"
+    elif req in companyoptions:
+        return "Organization"
+    elif req in noteoptions:
+        return "NOTE"
+    elif req in suffixoptions:
+        return "Suffix"
+    else:
+        return ''

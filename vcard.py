@@ -4,6 +4,7 @@ def gen_vcard(assign,row,version="2.1"):
     returntext = f"BEGIN:VCARD\nVERSION:{version}\n"
     name = []
     suffix = []
+    
     for key, value in assign.items():
         key = key[:-1]
         if key.startswith("!"):
@@ -14,7 +15,7 @@ def gen_vcard(assign,row,version="2.1"):
         value = str(value).strip()  
         if key.startswith("Name"):
             name.append(value)
-        if key.startswith("Suffix"):
+        elif key.startswith("Suffix"):
             suffix.append(value)
     if not name:
         name = ["Unknown"]

@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import openpyxl
 from vcard import gen_vcard
 
 def apply_custom_css():

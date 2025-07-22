@@ -199,44 +199,83 @@ def main():
     st.markdown('<h1 class="main-title">📱 VCF Generator Pro</h1>', unsafe_allow_html=True)
     st.markdown('<p class="subtitle">Transform your contact data into vCard format with style</p>', unsafe_allow_html=True)
     
-    # File type selection section
-    st.markdown('<div class="section-header">📁 Select File Type</div>', unsafe_allow_html=True)
-    options=["EXCEL File", "CSV File", "TSV File"]
-    typeoffile = st.selectbox("Choose your file format", options, help="Select the format of your contact data file")
-    
-    with st.container():
-        if typeoffile == "EXCEL File":
-            st.success("📊 Excel file selected - Perfect for structured data!")
-        elif typeoffile == "CSV File":
-            st.success("📄 CSV file selected - Great for simple comma-separated data!")
-        elif typeoffile == "TSV File":
-            st.success("📋 TSV file selected - Ideal for tab-separated data!")
-
     # File upload section
     st.markdown('<div class="section-header">📤 Upload Your File</div>', unsafe_allow_html=True)
     uploaded_file = st.file_uploader("Drag and drop your file here", type=["xlsx", "csv", "tsv"])
     
+    # Help section for file upload
+    with st.expander("ℹ️ Need help with file upload?", expanded=False):
+        st.markdown("""
+        ### File Upload Instructions
+        
+        **Supported file formats:**
+        - **Excel (.xlsx)**: Spreadsheets created in Microsoft Excel
+        - **CSV (.csv)**: Comma-separated values files
+        - **TSV (.tsv)**: Tab-separated values files
+        
+        **Tips for preparing your file:**
+        1. Make sure your file has a header row with column names
+        2. Each row should represent one contact
+        3. The file should be properly formatted without corruption
+        4. Common columns to include: name, phone number, email, address, etc.
+        
+        **What happens next:**
+        After uploading, the app will automatically detect the file type and load your data.
+        """)
+    
     if uploaded_file is not None:
-        if typeoffile == "EXCEL File":
+        # Auto-detect file type based on extension
+        file_extension = uploaded_file.name.split('.')[-1].lower()
+        
+        if file_extension == 'xlsx':
             df = pd.read_excel(uploaded_file)
-        elif typeoffile == "CSV File":
+            file_type_message = "📊 Excel file detected - Perfect for structured data!"
+        elif file_extension == 'csv':
             df = pd.read_csv(uploaded_file)
-        elif typeoffile == "TSV File":
+            file_type_message = "📄 CSV file detected - Great for simple comma-separated data!"
+        elif file_extension == 'tsv':
             df = pd.read_csv(uploaded_file, sep='\t')
+            file_type_message = "📋 TSV file detected - Ideal for tab-separated data!"
         else:
             st.error("Unsupported file type.")
             return
         
+        st.success(file_type_message)
+        
+        df = df.dropna(axis=1, how='all')  # Remove empty columns
+        df = df.reset_index(drop=True)  # Reset index after dropping columns
+        df = df.dropna(how='all')  # Remove rows that are completely empty
+            
         filename = uploaded_file.name.split('.')[0]
         st.success(f"✅ File loaded successfully: **{filename}**")
+        
+        # After file is processed and before data preview
+        # Ask if the vCard is intended for iOS
+        st.markdown('<div class="section-header">⚙️ vCard Settings</div>', unsafe_allow_html=True)
+        is_ios = st.checkbox("Is this vCard for iOS devices?", help="Check if you want to optimize the vCard for iOS compatibility")
+        st.session_state["is_ios"] = is_ios
+        
+        # Help section for iOS setting
+        with st.expander("ℹ️ Need help with vCard settings?", expanded=False):
+            st.markdown("""
+            ### vCard Settings Instructions
+            
+            **iOS Compatibility:**
+            - If checked, the app will generate vCards in version 2.1 format, which is more compatible with iOS devices
+            - If unchecked, the app will use the newer vCard 3.0 format
+            
+            **When to check this option:**
+            - If you plan to import contacts to an iPhone or iPad
+            - If you've had issues with vCards not importing correctly on Apple devices
+            - If you're unsure which recipients will be using the vCard files
+            
+            **Note:** Most modern devices support both formats, but iOS sometimes handles vCard 2.1 better for certain fields.
+            """)
         
         # Data preview section
         st.markdown('<div class="section-header">👀 Data Preview</div>', unsafe_allow_html=True)
         with st.expander("View your data", expanded=False):
             st.dataframe(df, use_container_width=True)
-        # Ask if the vCard is intended for iOS
-        is_ios = st.checkbox("Is this vCard for iOS devices?", help="Check if you want to optimize the vCard for iOS compatibility")
-        st.session_state["is_ios"] = is_ios
         # Column mapping section
         st.markdown('<div class="section-header">🔗 Column Mapping</div>', unsafe_allow_html=True)
         st.info("Map each column in your data to the appropriate vCard field")
@@ -274,9 +313,55 @@ def main():
                 if value != "NONE":
                     assign[value] = column
         
+        # Help section for column mapping
+        with st.expander("ℹ️ Need help with column mapping?", expanded=False):
+            st.markdown("""
+            ### Column Mapping Instructions
+            
+            **What is this step for?**  
+            This step connects your spreadsheet columns to the correct contact fields in the vCard format.
+            
+            **How to use:**
+            1. For each column in your data, select the appropriate vCard field from the dropdown
+            2. If a column doesn't contain contact information, select "NONE"
+            3. For Phone Numbers and Email addresses, specify the type (Mobile, Work, or Home)
+            4. The app will try to automatically map columns based on their names
+            
+            **Field descriptions:**
+            - **Name**: Person's name (first, last, or full name)
+            - **Address**: Physical address information
+            - **Phone Number**: Telephone numbers (requires specifying type)
+            - **Email**: Email addresses (requires specifying type)
+            - **Suffix**: Name suffixes like Jr., Sr., MD, PhD
+            - **Organization**: Company or organization name
+            - **Job Title**: Position or role within organization
+            - **NOTE**: Additional notes or comments about the contact
+            """)
+        
         # Additional fields section
         st.markdown('<div class="section-header">➕ Additional Fields</div>', unsafe_allow_html=True)
         is_there = st.checkbox("Add common fields to all contacts", help="Add fields that will be the same for all contacts")
+        
+        # Help section for additional fields
+        with st.expander("ℹ️ Need help with additional fields?", expanded=False):
+            st.markdown("""
+            ### Additional Fields Instructions
+            
+            **What is this step for?**  
+            This allows you to add information that should appear in ALL contacts in your vCard file.
+            
+            **When to use:**
+            - Add your company name to all contacts
+            - Add a department or division to all contacts
+            - Add standard notes to all contacts
+            
+            **How to use:**
+            1. Check the box to enable additional fields
+            2. Specify how many fields you want to add
+            3. For each field, enter the value and select the field type
+            4. These values will be added to EVERY contact in the final vCard
+            """)
+        
         ver = 2.1 if st.session_state.get("is_ios", False) else 3.0
         if is_there:
             no_of_such = int(st.number_input("Number of additional fields", key="new_value", min_value=1, max_value=10, step=1))
@@ -298,10 +383,54 @@ def main():
         # Generation section
         st.markdown('<div class="section-header">🚀 Generate vCard</div>', unsafe_allow_html=True)
         
+        # Help section for vCard generation
+        with st.expander("ℹ️ Need help with vCard generation?", expanded=False):
+            st.markdown("""
+            ### vCard Generation Instructions
+            
+            **What happens during generation:**
+            1. The app processes each row in your data
+            2. It maps the columns to the appropriate vCard fields based on your selections
+            3. It creates a vCard record for each contact
+            4. All vCards are combined into a single .vcf file
+            
+            **After generation:**
+            - You'll see a success message with the number of contacts processed
+            - A download button will appear to save the .vcf file
+            - You can import this file into most contact applications and smartphones
+            
+            **Importing tips:**
+            - On iOS: Email the .vcf file to yourself and open it on your device
+            - On Android: Copy the file to your device and open it with your contacts app
+            - On desktop: Most email clients can import .vcf files directly
+            """)
+        
         col1, col2 = st.columns([1, 1])
         
         with col1:
             generate_btn = st.button("🎯 Generate vCard", key="generate_vcard", use_container_width=True)
+        
+        # Help section for vCard generation
+        with st.expander("ℹ️ Need help with vCard generation?", expanded=False):
+            st.markdown("""
+            ### vCard Generation Instructions
+            
+            **What happens during generation:**
+            1. The app processes each row in your data
+            2. It maps the columns to the appropriate vCard fields based on your selections
+            3. It creates a vCard record for each contact
+            4. All vCards are combined into a single .vcf file
+            
+            **After generation:**
+            - You'll see a success message with the number of contacts processed
+            - A download button will appear to save the .vcf file
+            - You can import this file into most contact applications and smartphones
+            
+            **Importing tips:**
+            - On iOS: Email the .vcf file to yourself and open it on your device
+            - On Android: Copy the file to your device and open it with your contacts app
+            - On desktop: Most email clients can import .vcf files directly
+            """)
         
         if generate_btn:
             with st.spinner("Generating vCard... Please wait!"):

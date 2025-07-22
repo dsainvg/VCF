@@ -89,11 +89,11 @@ def columncheck(req):
     req = req.strip()
     req = req.lower()
     Nameoptions = ["name","full name","name","fullname"]
-    addressoptions = ["address","address work","address home","hall of residence","residence"]
-    phoneoptions = ["phone number","phone","mobile","ph no","mobile number","cell","home phone","work phone","business phone","business fax"]
+    addressoptions = ["address","address work","address home","hall of residence","residence","hall","home address","work address","office address","location","place of residence"]
+    phoneoptions = ["phone number","phone","mobile","ph no","mobile number","cell","home phone","work phone","business phone","business fax","mobile no"]
     emailoptions = ["email","email work","email home","email other","email personal","gmail","outlook","yahoo","hotmail","icloud","mail","work mail","personal mail","mailid","email id", "email address", "mail id"]
     companyoptions = ["company","organization","org","company name","organization name","org name"]
-    noteoptions = ["note","department","notes","comment","comments","description","remarks","feedback","observation","annotation"]
+    noteoptions = ["note","department","notes","comment","comments","description","remarks","feedback","observation","annotation","branch"]
     jobtitleoptions = ["job title","job","designation","position","role","occupation","profession","work title","work position"]
     suffixoptions = ["suffix","name suffix","title suffix","honorific suffix","post-nominal letters","post-nominal title","post-nominal suffix"]
     if req in Nameoptions:

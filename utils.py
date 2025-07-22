@@ -14,6 +14,11 @@ def genrev():
     return f"REV:{revgen()}\n"
 
 def genphn(phn,number):
+    number = str(number)
+    number = number.strip()
+    number = re.sub(r'[^0-9]', '', number)  # Remove non-numeric characters
+    if "." in number:
+        number = number.split(".")[0]
     if phn == "Phone Number+Mobile":
         return f"TEL;TYPE=CELL:{number}\n"
     elif phn == "Phone Number+Work":
